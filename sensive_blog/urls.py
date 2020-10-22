@@ -1,3 +1,4 @@
+import debug_toolbar
 from django.contrib import admin
 from blog import views
 from django.urls import include, path
