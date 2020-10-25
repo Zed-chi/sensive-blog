@@ -28,18 +28,7 @@ class PostQuerySet(models.QuerySet):
 class TagQuerySet(models.QuerySet):
     
     def popular(self):
-        return self.annotate(popular=models.Count("posts")).order_by("-popular")        
-
-    def fetch_with_posts_count(self):
-        ids = [tag.id for tag in self]
-        tags_with_posts = Tag.objects.filter(id__in=ids).annotate(
-            posts_count=models.Count("posts")
-        )
-        ids_and_posts = tags_with_posts.values_list("id", "posts_count")
-        count_for_id = dict(ids_and_posts)
-        for tag in self:
-            tag.posts_count = count_for_id[tag.id]
-        return self
+        return self.annotate(posts_with_tag=models.Count("posts")).order_by("-posts_with_tag")        
 
 class Post(models.Model):
     objects = PostQuerySet.as_manager()
