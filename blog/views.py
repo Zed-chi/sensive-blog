@@ -18,20 +18,6 @@ def serialize_post(post):
     }
 
 
-def serialize_tag(tag):
-    return {
-        "title": tag.title,
-        "posts_with_tag": tag.posts.count(),
-    }
-
-
-def serialize_tag_optimized(tag):
-    return {
-        "title": tag.title,
-        "posts_with_tag": tag.posts_with_tag,
-    }
-
-
 def index(request):
     posts = Post.objects.prefetch_related(
         "author", Prefetch("tags", queryset=Tag.objects.popular())
