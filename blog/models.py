@@ -4,31 +4,37 @@ from django.contrib.auth.models import User
 
 
 class PostQuerySet(models.QuerySet):
-
     def year(self, year):
         posts_at_year = self.filter(published_at__year=year).order_by(
             "published_at"
         )
         return posts_at_year
-    
+
     def popular(self):
-        return self.annotate(likes_count=models.Count("likes")).order_by("-likes_count")
-        
+        return self.annotate(likes_count=models.Count("likes")).order_by(
+            "-likes_count"
+        )
+
     def fetch_with_comments_count(self):
         ids = [post.id for post in self]
         posts_with_comments = Post.objects.filter(id__in=ids).annotate(
             comments_count=models.Count("comments")
         )
-        ids_and_comments = posts_with_comments.values_list("id", "comments_count")
+        ids_and_comments = posts_with_comments.values_list(
+            "id", "comments_count"
+        )
         count_for_id = dict(ids_and_comments)
         for post in self:
             post.comments_count = count_for_id[post.id]
         return self
-        
+
+
 class TagQuerySet(models.QuerySet):
-    
     def popular(self):
-        return self.annotate(posts_with_tag=models.Count("posts")).order_by("-posts_with_tag")        
+        return self.annotate(posts_with_tag=models.Count("posts")).order_by(
+            "-posts_with_tag"
+        )
+
 
 class Post(models.Model):
     objects = PostQuerySet.as_manager()
@@ -69,7 +75,7 @@ class Post(models.Model):
 
 class Tag(models.Model):
     objects = TagQuerySet.as_manager()
-    
+
     title = models.CharField("Тег", max_length=20, unique=True)
 
     def __str__(self):
